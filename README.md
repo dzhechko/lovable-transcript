@@ -14,7 +14,7 @@
 
 ## 🚀 Демо
 
-Посетите [https://ваш-username.github.io/lovable-transcript](https://ваш-username.github.io/lovable-transcript)
+Посетите [https://dzhechko.github.io/lovable-transcript](https://dzhechko.github.io/lovable-transcript)
 
 ## 📋 Содержание транскрипта
 
