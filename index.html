@@ -204,6 +204,43 @@
             border-left: 3px solid transparent;
         }
 
+        /* Custom scrollbar for table of contents */
+        #table-of-contents::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #table-of-contents::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        #table-of-contents::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        #table-of-contents::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Scroll indicator gradient for TOC */
+        #toc-sidebar .sticky::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(transparent, #f9fafb);
+            pointer-events: none;
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* Hide the gradient when scrolled to bottom */
+        #table-of-contents.scrolled-to-bottom + .scroll-indicator {
+            display: none;
+        }
+
         #table-of-contents a:hover, #mobile-table-of-contents a:hover {
             background-color: #f3f4f6;
             color: #1f2937;
@@ -380,9 +417,9 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Table of Contents -->
             <aside id="toc-sidebar" class="lg:w-1/4 hidden lg:block">
-                <div class="sticky top-32 bg-gray-50 rounded-lg p-6">
+                <div class="sticky top-32 bg-gray-50 rounded-lg p-6 max-h-[calc(100vh-10rem)] flex flex-col">
                     <h3 class="font-bold text-lg mb-4 text-gray-800">Содержание</h3>
-                    <nav id="table-of-contents" class="space-y-2">
+                    <nav id="table-of-contents" class="space-y-2 overflow-y-auto flex-1 pr-2 relative">
                         <a href="#introduction" class="toc-link" data-section="introduction">Введение и приветствие</a>
                         <a href="#overview" class="toc-link" data-section="overview">Обзор новых возможностей</a>
                         <a href="#lovable-cloud" class="toc-link" data-section="lovable-cloud">Что такое Lovable Cloud?</a>
@@ -1376,8 +1413,8 @@
 
     <!-- Mobile TOC Modal -->
     <div id="mobile-toc" class="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden hidden">
-        <div class="bg-white rounded-t-2xl mt-16 h-full overflow-y-auto">
-            <div class="p-6">
+        <div class="bg-white rounded-t-2xl mt-16 h-full flex flex-col">
+            <div class="p-6 flex-shrink-0">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-bold text-lg">Содержание</h3>
                     <button id="close-mobile-toc" class="text-gray-500 hover:text-gray-700">
@@ -1386,6 +1423,8 @@
                         </svg>
                     </button>
                 </div>
+            </div>
+            <div class="flex-1 overflow-y-auto px-6 pb-6">
                 <nav id="mobile-table-of-contents" class="space-y-3">
                     <a href="#introduction" class="toc-link" data-section="introduction">Введение и приветствие</a>
                     <a href="#overview" class="toc-link" data-section="overview">Обзор новых возможностей</a>
@@ -1830,8 +1869,41 @@
             }
         }
 
-        // Initialize the app
+        // Table of Contents scroll management
+        class TOCScrollManager {
+            constructor() {
+                this.tocElement = document.getElementById('table-of-contents');
+                this.setupTOCScroll();
+            }
+
+            setupTOCScroll() {
+                if (!this.tocElement) return;
+
+                // Add scroll event listener to TOC
+                this.tocElement.addEventListener('scroll', () => {
+                    this.updateScrollIndicator();
+                });
+
+                // Initial check
+                setTimeout(() => this.updateScrollIndicator(), 100);
+            }
+
+            updateScrollIndicator() {
+                const { scrollTop, scrollHeight, clientHeight } = this.tocElement;
+                const isScrolledToBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
+                
+                // Add class when scrolled to bottom to hide gradient
+                if (isScrolledToBottom) {
+                    this.tocElement.classList.add('scrolled-to-bottom');
+                } else {
+                    this.tocElement.classList.remove('scrolled-to-bottom');
+                }
+            }
+        }
+
+        // Initialize the apps
         new TranscriptApp();
+        new TOCScrollManager();
     </script>
 </body>
 </html>
